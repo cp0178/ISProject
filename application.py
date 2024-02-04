@@ -6,9 +6,9 @@ import os
 from wtforms.validators import InputRequired, DataRequired
 from energyData import customerData
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = '123'
-app.config['UPLOAD_FOLDER'] = 'upload'
+application = Flask(__name__)
+application.config['SECRET_KEY'] = '123'
+application.config['UPLOAD_FOLDER'] = 'upload'
 
 class UploadFileForm(FlaskForm):
     file = FileField("File", validators=[InputRequired()])
@@ -45,54 +45,54 @@ class compareUploadFileForm(FlaskForm):
     submit = SubmitField("Calculate Rate")
 
 
-@app.route('/flat', methods=['GET','POST'])
+@application.route('/flat', methods=['GET','POST'])
 def flat():
     form = FlatRateUploadFileForm()
     if form.validate_on_submit():
         file = form.file.data
-        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
         flatRate = form.rate.data
         i = customerData("Jonathan", "Procknow")
-        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
         calcRate = i.flatRateCalculation(float(flatRate))
         return "Your rate is " + str(calcRate)
     return render_template('flat.html', form=form)
 
-@app.route('/vary', methods=['GET','POST'])
+@application.route('/vary', methods=['GET','POST'])
 def vary():
     form = VaryRateUploadFileForm()
     if form.validate_on_submit():
         file = form.file.data
-        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
         rateUno = form.rate1.data
         rateDos = form.rate2.data
         timeUno = form.time1.data
         timeDos = form.time2.data
         i = customerData("Jonathan", "Procknow")
-        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
         calcRate = i.varyRate(float(rateUno), float(rateDos), int(timeUno), int(timeDos))
         return "Your rate is " + str(calcRate)
     return render_template('vary.html', form=form)
 
-@app.route('/freeWeekends', methods=['GET','POST'])
+@application.route('/freeWeekends', methods=['GET','POST'])
 def freeWeekends():
     form = FreeWeekendsRateUploadFileForm()
     if form.validate_on_submit():
         file = form.file.data
-        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
         rate = form.rate.data
         i = customerData("Jonathan", "Procknow")
-        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
         calcRate = i.freeWeekends(float(rate))
         return "Your rate is " + str(calcRate)
     return render_template('freeWeekends.html', form=form)
 
-@app.route('/', methods=['GET','POST'])
+@application.route('/', methods=['GET','POST'])
 def index():
     form = compareUploadFileForm()
     if form.validate_on_submit():
         file = form.file.data
-        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
         rateUno = form.rate1.data
         rateDos = form.rate2.data
         timeUno = form.time1.data
@@ -102,10 +102,10 @@ def index():
         highestDays = form.highestDays.data
         numDays = form.numDays.data
         i = customerData("Jonathan", "Procknow")
-        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
         calcRate = i.compareRates(float(rateUno), float(rateDos), int(timeUno), int(timeDos), float(flatRate), float(weekend), float(highestDays), int(numDays))
         return render_template('results.html', content=calcRate)
     return render_template('index.html', form=form)
 
 if(__name__ == "__main__"):
-    app.run(debug=True)
+    application.run(debug=True)
