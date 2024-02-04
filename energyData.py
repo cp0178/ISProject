@@ -46,7 +46,7 @@ class customerData:
         sum = 0
         for i in self.eDataArray:
             hour = int(i.getUsageStartTime().split(":")[0])
-            if(hour >= dayStartTime and hour < nightStartTime):
+            if(hour >= dayStartTime or hour < nightStartTime):
                 sum = dayTimeRate * float(i.getUsageKWH())+ sum
             else:
                 sum = nightRate * float(i.getUsageKWH())+ sum
