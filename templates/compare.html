@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="" method="post" enctype="multipart/form-data">
+        {{form.hidden_tag()}}
+        <p>{{form.file.label}} {{form.file()}}</p>
+        <p>{{form.rate1.label}} {{form.rate1()}}</p>
+        <p>{{form.rate2.label}} {{form.rate2()}}<p>
+        <p>{{form.time1.label}} {{form.time1()}}<p>
+        <p>{{form.time2.label}} {{form.time2()}}<p>
+        <p>{{form.flatRate.label}} {{form.flatRate}}<p>
+        <p>{{form.weekends.label}} {{form.weekends}}<p>
+        <p>{{form.highestDays.label}} {{form.highestDays}}<p>
+        <p>{{form.numDays.label}} {{form.numDays}}<p>
+        {{form.submit()}}
+    </form>
+</body>
+</html>
