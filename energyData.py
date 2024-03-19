@@ -68,6 +68,31 @@ class customerData:
         else:
             return "The free highest days rate is best"
     
+    def variableCompareRates(self, dayTimeRate, nightRate, dayStartTime, nightStartTime, rate, freeWeekendsRate, freeHighestDays, numDays, checkboxList):
+        ratesList = None
+        for i in checkboxList:
+            if(i == '1'):
+                vary = self.varyRate(dayTimeRate, nightRate, dayStartTime, nightStartTime)
+                ratesList.append(vary)
+            if(i == '2'):
+                flat = self.flatRateCalculation(rate)
+                ratesList.append(flat)
+            if(i == '3'):
+                weekends = self.freeWeekends(freeWeekendsRate)
+                ratesList.append(weekends)
+            if(i == '4'):
+                highestDays = self.highestDay(freeHighestDays,numDays)
+                ratesList.append(highestDays)
+        ratesList.sort()
+        if(ratesList[0] == flat):
+            return "The flat rate is best"
+        elif(ratesList[0] == vary):
+            return "The variable rate is best"
+        elif(ratesList[0] == weekends):
+            return "Free weekends rate is best"
+        else:
+            return "The free highest days rate is best"
+    
     def freeWeekends(self, rate):
         sum = 0
         for i in self.eDataArray:
