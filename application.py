@@ -131,7 +131,7 @@ def checkbox():
         print("Test2")
         print(request.form.getlist("myCheckbox"))
         checkboxList = request.form.getlist("myCheckbox")
-        return render_template('displayCheckbox.html', checkboxList=checkboxList)
+        return redirect(url_for('displayCheckbox', checkboxList=checkboxList))
     return render_template('checkbox.html')
 
 @application.route('/displayCheckbox', methods=['GET','POST'])
