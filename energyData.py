@@ -69,7 +69,7 @@ class customerData:
             return "The free highest days rate is best"
     
     def variableCompareRates(self, dayTimeRate, nightRate, dayStartTime, nightStartTime, rate, freeWeekendsRate, freeHighestDays, numDays, checkboxList):
-        ratesList = None
+        ratesList = []
         for i in checkboxList:
             if(i == '1'):
                 vary = self.varyRate(dayTimeRate, nightRate, dayStartTime, nightStartTime)

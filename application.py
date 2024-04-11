@@ -1,15 +1,19 @@
 
 from flask_wtf import FlaskForm
+from requests import Session
 from wtforms import FieldList, FileField, FormField, HiddenField, SubmitField, DecimalField
 from werkzeug.utils import secure_filename
 import os
 from wtforms.validators import InputRequired, DataRequired
 from energyData import customerData
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = '123'
 application.config['UPLOAD_FOLDER'] = 'upload'
+application.config["SESSION_PERMANENT"] = False
+application.config["SESSION_TYPE"] = "filesystem"
+Session(application)
 
 class UploadFileForm(FlaskForm):
     file = FileField("File", validators=[InputRequired()])
@@ -126,34 +130,78 @@ def index():
 
 @application.route('/checkbox', methods=['GET','POST'])
 def checkbox():
+    varyRate = False
+    flatRate = False
+    freeWeekendsRate = False
+    highestDaysRate = False
     print(request.method)
     if request.method == 'POST':
         print("Test2")
         print(request.form.getlist("myCheckbox"))
         checkboxList = request.form.getlist("myCheckbox")
-        return redirect(url_for('displayCheckbox', checkboxList=checkboxList))
+        for i in checkboxList:
+            if(i == "1"):
+                print("varyrate")
+                varyRate = True
+            if (i== "2"):
+                flatRate = True
+            if(i == "3"):
+                freeWeekendsRate = True
+            if (i== "4"):
+                highestDaysRate = True
+        Session["varyRate"] = str(varyRate)
+        Session["flatRate"] = str(flatRate)
+        Session["freeWeekendsRate"] = str(freeWeekendsRate)
+        Session["highestDaysRate"] = str(highestDaysRate)
+        return redirect(url_for('displayCheckbox', varyRate=varyRate, flat=flatRate, freeWeekendsRate=freeWeekendsRate,highestDaysRate=highestDaysRate))
     return render_template('checkbox.html')
 
 @application.route('/displayCheckbox', methods=['GET','POST'])
 def displayCheckbox():
     form = fileForm()
+    varyRate=False
+    if str(request.args.get('varyRate')) == "True":
+        varyRate=True
+    flat = False
+    if str(request.args.get('flat')) == "True":
+        flat = True
+    freeWeekendsRate = False
+    if str(request.args.get('freeWeekendsRate')) == "True":
+        freeWeekendsRate = True
+    highestDaysRate=False
+    if str(request.args.get('highestDaysRate')) == "True":
+        highestDaysRate = True
     if form.validate_on_submit():
+        print("on submit")
         file = form.file.data
         file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-        rateUno = form.rate1.data
-        rateDos = form.rate2.data
-        timeUno = form.time1.data
-        timeDos = form.time2.data
-        flatRate = form.flatRate.data
-        weekend = form.weekends.data
-        highestDays = form.highestDays.data
-        numDays = form.numDays.data
-        checkboxList = form.checkboxList.data
+        if varyRate:
+            rateUno = form.rate1.data
+            rateDos = form.rate2.data
+            timeUno = form.time1.data
+            timeDos = form.time2.data
+        if flat:
+            flatRate = form.flatRate.data
+        if freeWeekendsRate:
+            weekend = form.weekends.data
+        if highestDaysRate:
+            highestDays = form.highestDays.data
+            numDays = form.numDays.data
+        checkboxList = []
+        if(varyRate == True):
+            checkboxList.append("1")
+        if(flat == True):
+            checkboxList.append("2")
+        if(freeWeekendsRate == True):
+            checkboxList.append("3")
+        if(highestDaysRate == True):
+            checkboxList.append("4")
         i = customerData("Jonathan", "Procknow")
+        print("before calc data")
         i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
         calcRate = i.variableCompareRates(float(rateUno), float(rateDos), int(timeUno), int(timeDos), float(flatRate), float(weekend), float(highestDays), int(numDays), checkboxList)
         return render_template('results.html',form=form, content=calcRate)
-    return render_template('displayCheckbox.html', form=form)
+    return render_template('displayCheckbox.html', form=form, varyRate=str(varyRate),flat=str(flat),freeWeekendsRate=str(freeWeekendsRate),highestDaysRate=str(highestDaysRate))
 
 
 
