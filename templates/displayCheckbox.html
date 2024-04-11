@@ -9,24 +9,26 @@
     <form action="" method="post" enctype="multipart/form-data">
         {{form.hidden_tag()}}
         <li>Enter your Smart Meter Info {{form.file()}}</li>
-        {% for i in checkboxList: %}
-            {%if i == '1': %}
+            {%if varyRate == "True": %}
+                <br>Varible Rate<br>
                 <li>Enter your daytime rate {{form.rate1()}}</li>
                 <li>Enter your nighttime rate {{form.rate2()}}</li>
                 <li>Enter your daytime rate start time {{form.time1()}}</li>
                 <li>Enter your nighttime rate start time {{form.time2()}}</li>
             {%endif%}
-            {%if i == '2': %}
+            {%if flat == "True": %}
+                <br>Flat Rate<br>
                 <li>Enter your flat rate {{form.flatRate}}</li>
             {%endif %}
-            {%if i == '3': %}
+            {%if freeWeekendsRate == "True": %}
+                <br>Weekend Rate<br>
                 <li>Enter your free weekends rate {{form.weekends}}</li>
             {%endif %}
-            {%if i == '4': %}
+            {%if highestDaysRate == "True": %}
+                <br>Highest Days Free Rate<br>
                 <li>Enter your highest days off rate {{form.highestDays}}</li>
                 <li>Enter the numbers of days free {{form.numDays}}</li>
             {%endif %}
-            {%endfor %}
         
         {{form.submit()}}
     </form>
