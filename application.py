@@ -1,12 +1,14 @@
 
 from flask_wtf import FlaskForm
-from requests import Session
+#from requests import Session
 from wtforms import FieldList, FileField, FormField, HiddenField, SubmitField, DecimalField
 from werkzeug.utils import secure_filename
 import os
 from wtforms.validators import InputRequired, DataRequired
 from energyData import customerData
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, session
+from flask_session import Session
+
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = '123'
@@ -20,12 +22,10 @@ class UploadFileForm(FlaskForm):
     submit = SubmitField("Upload File")
 
 class FlatRateUploadFileForm(FlaskForm):
-    file = FileField("File", validators=[InputRequired()])
     rate = DecimalField("flatRate", validators=[InputRequired()])
     submit = SubmitField("Calculate Rate")
 
 class VaryRateUploadFileForm(FlaskForm):
-    file = FileField("File", validators=[InputRequired()])
     rate1 = DecimalField("VaryRate1", validators=[InputRequired()])
     rate2 = DecimalField("VaryRate2", validators=[InputRequired()])
     time1 = DecimalField("TimeRate1", validators=[InputRequired()])
@@ -33,8 +33,12 @@ class VaryRateUploadFileForm(FlaskForm):
     submit = SubmitField("Calculate Rate")
 
 class FreeWeekendsRateUploadFileForm(FlaskForm):
-    file = FileField("File", validators=[InputRequired()])
     rate = DecimalField("rate", validators=[InputRequired()])
+    submit = SubmitField("Calculate Rate")
+
+class highestDaysRateUploadFileForm(FlaskForm):
+    rate = DecimalField("rate", validators=[InputRequired()])
+    daysOff = DecimalField("daysOff", validators=[InputRequired()])
     submit = SubmitField("Calculate Rate")
 
 class compareUploadFileForm(FlaskForm):
@@ -70,43 +74,104 @@ class fileForm(FlaskForm):
 def flat():
     form = FlatRateUploadFileForm()
     if form.validate_on_submit():
-        file = form.file.data
-        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-        flatRate = form.rate.data
-        i = customerData("Jonathan", "Procknow")
-        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-        calcRate = i.flatRateCalculation(float(flatRate))
-        return "Your rate is " + str(calcRate)
+        session["flatRateData"] = form.rate.data
+        if session["freeWeekendsRate"] == "True":
+            return redirect(url_for('freeWeekends'))
+        elif session["highestDaysRate"] == "True":
+            return redirect(url_for('highestDays'))
+        else:
+            return redirect(url_for('formSubmit'))
     return render_template('flat.html', form=form)
 
 @application.route('/vary', methods=['GET','POST'])
 def vary():
     form = VaryRateUploadFileForm()
     if form.validate_on_submit():
-        file = form.file.data
-        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-        rateUno = form.rate1.data
-        rateDos = form.rate2.data
-        timeUno = form.time1.data
-        timeDos = form.time2.data
-        i = customerData("Jonathan", "Procknow")
-        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-        calcRate = i.varyRate(float(rateUno), float(rateDos), int(timeUno), int(timeDos))
-        return "Your rate is " + str(calcRate)
+        session["rateUno"] = form.rate1.data
+        session["rateDos"] = form.rate2.data
+        session["timeUno"] = form.time1.data
+        session["timeDos"] = form.time2.data
+        if session["flatRate"] == "True":
+            return redirect(url_for('flat'))
+        elif session["freeWeekendsRate"] == "True":
+            return redirect(url_for('freeWeekends'))
+        elif session["highestDaysRate"] == "True":
+            return redirect(url_for('highestDays'))
+        else:
+            return redirect(url_for('formSubmit'))
     return render_template('vary.html', form=form)
 
 @application.route('/freeWeekends', methods=['GET','POST'])
 def freeWeekends():
     form = FreeWeekendsRateUploadFileForm()
     if form.validate_on_submit():
+        session["freeWeekendsRateData"] = form.rate.data
+        if session["highestDaysRate"] == "True":
+            return redirect(url_for('highestDays'))
+        else:
+            return redirect(url_for('formSubmit'))
+    return render_template('freeWeekends.html', form=form)
+
+@application.route('/highestDays', methods=['GET','POST'])
+def highestDays():
+    form = highestDaysRateUploadFileForm()
+    if form.validate_on_submit():
+        session["highestDaysRateData"] = form.rate.data
+        session["daysOff"] = form.daysOff.data
+        return redirect(url_for('formSubmit'))
+    return render_template('highestDays.html', form=form)
+    
+
+@application.route('/formSubmit', methods=['GET','POST'])
+def formSubmit():
+    form = UploadFileForm()
+    if form.validate_on_submit():
         file = form.file.data
         file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-        rate = form.rate.data
         i = customerData("Jonathan", "Procknow")
         i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-        calcRate = i.freeWeekends(float(rate))
-        return "Your rate is " + str(calcRate)
-    return render_template('freeWeekends.html', form=form)
+        lowestVal = []
+        selectedRates = []
+        if session["varyrate"] == "True":
+            rateUno = session["rateUno"]
+            rateDos = session["rateDos"]
+            timeUno = session["timeUno"]
+            timeDos = session["timeDos"]
+            vary = i.varyRate(rateUno, rateDos, timeUno, timeDos) 
+            lowestVal.append(vary)
+            selectedRates.append("vary")
+        if session["flatRate"] == "True":
+            flatRate = session["flatRateData"]
+            flat = i.flatRateCalculation(flatRate)
+            lowestVal.append(flat)
+            selectedRates.append("flat")
+        if session["freeWeekendsRate"] == "True":
+            weekend =  session["freeWeekendsRateData"]
+            freeWeekend = i.freeWeekends(weekend)
+            lowestVal.append(freeWeekend)
+            selectedRates.append("freeWeekends")
+        if session["highestDaysRate"] == "True":
+            highestDays = session["highestDaysRateData"]
+            numDays =  session["daysOff"]
+            high = i.highestDay(highestDays, numDays)
+            lowestVal.append(high)
+            selectedRates.append("highestDays")
+        lowestVal.sort()
+        for a in selectedRates:
+            if a == "vary":
+                if vary == lowestVal[0]:
+                    return render_template('results.html', content="Vary rate is your best option")
+            if a == "flat":
+                if flat == lowestVal[0]:
+                    return render_template('results.html', content="Flat rate is your best option")
+            if a == "freeWeekends":
+                if freeWeekend == lowestVal[0]:
+                    return render_template('results.html', content="Free weekends is your best option")
+            if a == "highestDays":
+                if high == lowestVal[0]:
+                    return render_template('results.html', content="Highest day off is your best option")
+
+    return render_template('formSubmit.html', form=form)
 
 @application.route('/', methods=['GET','POST'])
 def index():
@@ -149,69 +214,26 @@ def checkbox():
                 freeWeekendsRate = True
             if (i== "4"):
                 highestDaysRate = True
-        Session["varyRate"] = str(varyRate)
-        Session["flatRate"] = str(flatRate)
-        Session["freeWeekendsRate"] = str(freeWeekendsRate)
-        Session["highestDaysRate"] = str(highestDaysRate)
-        return redirect(url_for('displayCheckbox', varyRate=varyRate, flat=flatRate, freeWeekendsRate=freeWeekendsRate,highestDaysRate=highestDaysRate))
+        session["varyRate"] = str(varyRate)
+        session["flatRate"] = str(flatRate)
+        session["freeWeekendsRate"] = str(freeWeekendsRate)
+        session["highestDaysRate"] = str(highestDaysRate)
+        if session["varyRate"] == "True":
+            return redirect(url_for('vary'))
+        elif session["flatRate"] == "True":
+            return redirect(url_for('flat'))
+        elif session["freeWeekendsRate"] == "True":
+            return redirect(url_for('freeWeekends'))
+        else:
+            return redirect(url_for('highestDays'))
+        
     return render_template('checkbox.html')
 
-@application.route('/displayCheckbox', methods=['GET','POST'])
-def displayCheckbox():
-    form = fileForm()
-    varyRate=False
-    if str(request.args.get('varyRate')) == "True":
-        varyRate=True
-    flat = False
-    if str(request.args.get('flat')) == "True":
-        flat = True
-    freeWeekendsRate = False
-    if str(request.args.get('freeWeekendsRate')) == "True":
-        freeWeekendsRate = True
-    highestDaysRate=False
-    if str(request.args.get('highestDaysRate')) == "True":
-        highestDaysRate = True
-    if form.validate_on_submit():
-        print("on submit")
-        file = form.file.data
-        file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-        if varyRate:
-            rateUno = form.rate1.data
-            rateDos = form.rate2.data
-            timeUno = form.time1.data
-            timeDos = form.time2.data
-        if flat:
-            flatRate = form.flatRate.data
-        if freeWeekendsRate:
-            weekend = form.weekends.data
-        if highestDaysRate:
-            highestDays = form.highestDays.data
-            numDays = form.numDays.data
-        checkboxList = []
-        if(varyRate == True):
-            checkboxList.append("1")
-        if(flat == True):
-            checkboxList.append("2")
-        if(freeWeekendsRate == True):
-            checkboxList.append("3")
-        if(highestDaysRate == True):
-            checkboxList.append("4")
-        i = customerData("Jonathan", "Procknow")
-        print("before calc data")
-        i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-        calcRate = i.variableCompareRates(float(rateUno), float(rateDos), int(timeUno), int(timeDos), float(flatRate), float(weekend), float(highestDays), int(numDays), checkboxList)
-        return render_template('results.html',form=form, content=calcRate)
-    return render_template('displayCheckbox.html', form=form, varyRate=str(varyRate),flat=str(flat),freeWeekendsRate=str(freeWeekendsRate),highestDaysRate=str(highestDaysRate))
 
 
 
 
-#@application.route('compareRates', methods=['GET','POST'])
-#def compareRates():
- #   form =
-  #  if form.validate_on_submit():
-   #     return render_template('results.html', content=calcRate)
-    #return render_template('compareRates.html', form=form)
+
 
 if(__name__ == "__main__"):
     application.run(debug=True)
