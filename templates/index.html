@@ -30,45 +30,21 @@
             <div class="container px-4 text-center">
                 <h1 class="fw-bolder">Welcome to Energy Comparison Site</h1>
                 <p class="lead">Compare different energy plans with actual data from Smart Meter Texas</p>
-                <a class="btn btn-lg btn-light" href="#about">Start comparing!</a>
+                <a class="btn btn-lg btn-light" href="/checkbox">Start comparing!</a>
             </div>
         </header>
-        <!-- About section-->
-        <section id="about">
-            <div class="container px-4">
-                <div class="row gx-4 justify-content-center">
-                    <div class="col-lg-8">
-                        <h2>Compare Plans</h2>
-                        <ul>
-                        <form action="" method="post" enctype="multipart/form-data">
-                            
-                            {{form.hidden_tag()}}
-                            <li>Enter your Smart Meter Info {{form.file()}}</li>
-                            <li>Enter your daytime rate {{form.rate1()}}</li>
-                            <li>Enter your nighttime rate {{form.rate2()}}</li>
-                            <li>Enter your daytime rate start time {{form.time1()}}</li>
-                            <li>Enter your nighttime rate start time {{form.time2()}}</li>
-                            <li>Enter your flat rate {{form.flatRate}}</li>
-                            <li>Enter your free weekends rate {{form.weekends}}</li>
-                            <li>Enter your highest days off rate {{form.highestDays}}</li>
-                            <li>Enter the numbers of days free {{form.numDays}}</li>
-                            {{form.submit()}}
-                        </form>
-                        
-                
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
+        
         <!-- Services section-->
         <section class="bg-light" id="Rates">
             <div class="container px-4">
                 <div class="row gx-4 justify-content-center">
                     <div class="col-lg-8">
                         <h2>Rates</h2>
-                        <p class="lead">Rate Info</p>
-                        <a class="btn btn-lg btn-light" href="/checkbox">checkbox</a>
+                        <p class="lead"><b>Vary Rate:</b> The amount you will pay for electricity usage will depend on the time of the day. Usually daytime rates are more expensive than nighttime rates
+                            <br> <b>Flat Rate:</b> The rate you pay will stay the same no matter the usage.
+                            <br> <b>Free Weekend Rate:</b> You will get the weekends for free, but this means your weekday rate will be high.
+                            <br> <b>Highest Day Off:</b> A selected amount of the highest usage days will be free.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -79,7 +55,7 @@
                 <div class="row gx-4 justify-content-center">
                     <div class="col-lg-8">
                         <h2>Smart Meter Info</h2>
-                        <p class="lead">Smart Meter Info</p>
+                        <p class="lead"><a target="_blank" href="//www.smartmetertexas.com/home">Smart Meter Info</a></p>
                     </div>
                 </div>
             </div>

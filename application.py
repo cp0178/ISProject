@@ -1,6 +1,5 @@
 
 from flask_wtf import FlaskForm
-#from requests import Session
 from wtforms import FieldList, FileField, FormField, HiddenField, SubmitField, DecimalField
 from werkzeug.utils import secure_filename
 import os
@@ -66,7 +65,6 @@ class fileForm(FlaskForm):
     submit = SubmitField("Calculate Rate")
     checkboxList = HiddenField("checkboxList")
 
-#class chooseRateFileForm(FlaskForm):
 
 
 
@@ -132,27 +130,27 @@ def formSubmit():
         i.energyDataInput(os.path.join(os.path.abspath(os.path.dirname(__file__)), application.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
         lowestVal = []
         selectedRates = []
-        if session["varyrate"] == "True":
-            rateUno = session["rateUno"]
-            rateDos = session["rateDos"]
-            timeUno = session["timeUno"]
-            timeDos = session["timeDos"]
+        if session["varyRate"] == "True":
+            rateUno = float(session["rateUno"])
+            rateDos = float(session["rateDos"])
+            timeUno = int(session["timeUno"])
+            timeDos = int(session["timeDos"])
             vary = i.varyRate(rateUno, rateDos, timeUno, timeDos) 
             lowestVal.append(vary)
             selectedRates.append("vary")
         if session["flatRate"] == "True":
-            flatRate = session["flatRateData"]
+            flatRate = float(session["flatRateData"])
             flat = i.flatRateCalculation(flatRate)
             lowestVal.append(flat)
             selectedRates.append("flat")
         if session["freeWeekendsRate"] == "True":
-            weekend =  session["freeWeekendsRateData"]
+            weekend = float(session["freeWeekendsRateData"])
             freeWeekend = i.freeWeekends(weekend)
             lowestVal.append(freeWeekend)
             selectedRates.append("freeWeekends")
         if session["highestDaysRate"] == "True":
-            highestDays = session["highestDaysRateData"]
-            numDays =  session["daysOff"]
+            highestDays = float(session["highestDaysRateData"])
+            numDays =  int(session["daysOff"])
             high = i.highestDay(highestDays, numDays)
             lowestVal.append(high)
             selectedRates.append("highestDays")
