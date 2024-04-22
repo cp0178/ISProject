@@ -158,16 +158,16 @@ def formSubmit():
         for a in selectedRates:
             if a == "vary":
                 if vary == lowestVal[0]:
-                    return render_template('results.html', content="Vary rate is your best option")
+                    return render_template('results.html', content="Vary rate is your best option", num=vary)
             if a == "flat":
                 if flat == lowestVal[0]:
-                    return render_template('results.html', content="Flat rate is your best option")
+                    return render_template('results.html', content="Flat rate is your best option", num=flat)
             if a == "freeWeekends":
                 if freeWeekend == lowestVal[0]:
-                    return render_template('results.html', content="Free weekends is your best option")
+                    return render_template('results.html', content="Free weekends is your best option", num=freeWeekend)
             if a == "highestDays":
                 if high == lowestVal[0]:
-                    return render_template('results.html', content="Highest day off is your best option")
+                    return render_template('results.html', content="Highest day off is your best option", num=high)
 
     return render_template('formSubmit.html', form=form)
 
