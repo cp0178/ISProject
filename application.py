@@ -177,7 +177,6 @@ def formSubmit():
             if a == "highestDays":
                 if high == lowestVal[0]:
                     return render_template('results.html', content="Highest day off is your best option", num="Highest Day Rate: " + high)
-
     return render_template('formSubmit.html', form=form)
 
 @application.route('/', methods=['GET','POST'])
