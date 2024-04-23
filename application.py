@@ -159,14 +159,14 @@ def formSubmit():
             if a == "vary":
                 if vary == lowestVal[0]:
                     rateVals = "Vary Rate: "+ vary + "\n"
-                    #if len(selectedRates) > 1:
-                     #   for b in selectedRates:
-                      #      if b == "flat":
-                       #         rateVals = rateVals + "Flat Rate: " + flat + "\n"
-                        #    if b == "freeWeekends": 
-                         #       rateVals = rateVals + "Free Weekends: " + freeWeekend + "\n"
-                          #  if b == "highestDays":
-                           #     rateVals = rateVals + "Highest Days Off: " + high + "\n"
+                    if len(selectedRates) > 1:
+                        for b in selectedRates:
+                            if b == "flat":
+                                rateVals = rateVals + "Flat Rate: " + flat + "\n"
+                            if b == "freeWeekends": 
+                                rateVals = rateVals + "Free Weekends: " + freeWeekend + "\n"
+                            if b == "highestDays":
+                                rateVals = rateVals + "Highest Days Off: " + high + "\n"
                     return render_template('results.html', content="Vary rate is your best option", num=rateVals)
             if a == "flat":
                 if flat == lowestVal[0]:
