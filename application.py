@@ -158,15 +158,15 @@ def formSubmit():
         for a in selectedRates:
             if a == "vary":
                 if vary == lowestVal[0]:
-                    rateVals = "Vary Rate: "+ str(round(vary,2)) + "<br>"
+                    rateVals = "Vary Rate: "+ str(round(vary,2)) + "\n"
                     if len(selectedRates) > 1:
                         for b in selectedRates:
                             if b == "flat":
-                                rateVals = rateVals + "Flat Rate: " + str(round(flat,2)) + "<br>"
+                                rateVals = rateVals + "Flat Rate: " + str(round(flat,2)) + "\n"
                             if b == "freeWeekends": 
-                                rateVals = rateVals + "Free Weekends: " + str(round(freeWeekend,2)) + "<br>"
+                                rateVals = rateVals + "Free Weekends: " + str(round(freeWeekend,2)) + "\n"
                             if b == "highestDays":
-                                rateVals = rateVals + "Highest Days Off: " + str(round(high,2)) + "<br>"
+                                rateVals = rateVals + "Highest Days Off: " + str(round(high,2)) + "\n"
                     return render_template('results.html', content="Vary rate is your best option", num=rateVals)
             if a == "flat":
                 if flat == lowestVal[0]:
@@ -174,35 +174,35 @@ def formSubmit():
                     if len(selectedRates) > 1:
                         for b in selectedRates:
                             if b == "vary":
-                                rateVals = rateVals + "Vary Rate: " + str(round(vary,2)) + "<br>"
+                                rateVals = rateVals + "Vary Rate: " + str(round(vary,2)) + "\n"
                             if b == "freeWeekends": 
-                                rateVals = rateVals + "Free Weekends: " + str(round(freeWeekend,2)) + "<br>"
+                                rateVals = rateVals + "Free Weekends: " + str(round(freeWeekend,2)) + "\n"
                             if b == "highestDays":
-                                rateVals = rateVals + "Highest Days Off: " + str(round(high,2)) + "<br>"
+                                rateVals = rateVals + "Highest Days Off: " + str(round(high,2)) + "\n"
                     return render_template('results.html', content="Flat rate is your best option", num=rateVals)
             if a == "freeWeekends":
                 if freeWeekend == lowestVal[0]:
-                    rateVals = "Free Weekends Rate: "+ str(round(freeWeekend,2)) + "<br>"
+                    rateVals = "Free Weekends Rate: "+ str(round(freeWeekend,2)) + "\n"
                     if len(selectedRates) > 1:
                         for b in selectedRates:
                             if b == "vary":
-                                rateVals = rateVals + "Vary Rate: " + str(round(vary,2)) + "<br>"
+                                rateVals = rateVals + "Vary Rate: " + str(round(vary,2)) + "\n"
                             if b == "flat": 
-                                rateVals = rateVals + "Flat Rate: " + str(round(flat,2)) + "<br>"
+                                rateVals = rateVals + "Flat Rate: " + str(round(flat,2)) + "\n"
                             if b == "highestDays":
-                                rateVals = rateVals + "Highest Days Off: " + str(round(high,2)) + "<br>"
+                                rateVals = rateVals + "Highest Days Off: " + str(round(high,2)) + "\n"
                     return render_template('results.html', content="Free weekends is your best option", num=rateVals)
             if a == "highestDays":
                 if high == lowestVal[0]:
-                    rateVals = "Free Weekends Rate: "+ str(round(freeWeekend,2)) + "<br>"
+                    rateVals = "Free Weekends Rate: "+ str(round(freeWeekend,2)) + "\n"
                     if len(selectedRates) > 1:
                         for b in selectedRates:
                             if b == "vary":
-                                rateVals = rateVals + "Vary Rate: " + str(round(vary,2)) + "<br>"
+                                rateVals = rateVals + "Vary Rate: " + str(round(vary,2)) + "\n"
                             if b == "flat": 
-                                rateVals = rateVals + "Flat Rate: " + str(round(flat,2)) + "<br>"
+                                rateVals = rateVals + "Flat Rate: " + str(round(flat,2)) + "\n"
                             if b == "freeWeekends":
-                                rateVals = rateVals + "Free Weekends: " + str(round(freeWeekend,2)) + "<br>"
+                                rateVals = rateVals + "Free Weekends: " + str(round(freeWeekend,2)) + "\n"
                     return render_template('results.html', content="Highest day off is your best option", num=rateVals)
     return render_template('formSubmit.html', form=form)
 
